@@ -451,6 +451,10 @@ static dispatch_once_t pred;
     @synchronized (self) {
         NSSet *pendingRequests = [self.activeRequests asSet];
         for (SFRestRequest *request in pendingRequests) {
+            if (self.user.credentials.accessToken != nil) {
+                NSString *authToken = [NSString stringWithFormat:@"Bearer %@", self.user.credentials.accessToken];
+                [request.customHeaders setObject:authToken forKey:@"Authorization"];
+            }
             [self send:request requestDelegate:request.requestDelegate shouldRetry:NO];
         }
         self.pendingRequestsBeingProcessed = NO;
